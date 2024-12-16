@@ -10,7 +10,7 @@
 name=Créateur de Zones
 qgisMinimumVersion=3.0
 description=Créé des rectangles dans la couche "zone_de_tests"
-version=0.1
+version=1.0
 author=ta'o darbellay
 email=darbellay.tao@gmail.com
 about=Allow Créé des rectangles dans la couche "zone_de_tests"
