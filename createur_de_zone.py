@@ -38,7 +38,7 @@ class createur_de_zone(object):
             self.translator.load(locale_path)
 
         self.actions = []
-        self.menu = self.tr(u'&Système Hybride des Reconciliations, Extractions et Contrôles')
+        self.menu = self.tr(u'Créateur de zone')
         self.toolbar = self.iface.addToolBar(u'Créateur de zone')
         self.toolbar.setObjectName(u'Créateur de zone')
         self.actionList = []
