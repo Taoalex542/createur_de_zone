@@ -1,0 +1,2 @@
+wawawawa
+Le plugin utilises la première ligne en tant que nom de couche, tous les charactères sont pris en compte.

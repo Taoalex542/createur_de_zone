@@ -42,7 +42,7 @@ class createur_de_zone(object):
         self.toolbar = self.iface.addToolBar(u'Créateur de zone')
         self.toolbar.setObjectName(u'Créateur de zone')
         self.actionList = []
-        self.nom_zone = "zone_de_travail"
+        self.nom_zone = self.get_name()
         self.couche_zone = None
         self.get_layer()
         self.geoms = []
@@ -136,6 +136,18 @@ class createur_de_zone(object):
 
         return action
 
+    def get_name(self):
+        temp = []
+        filename = (os.path.dirname(os.path.realpath(__file__)) + "\\nom_couche.txt")
+        if os.path.isfile(filename):
+            f = open(filename)
+            for line in f:
+                temp.append(line)
+            f.close()
+            return temp[0].replace("\n", "")
+        else:
+            return "zone_plugin_createur"
+    
     def creerBouton(self, parent, text):
         button = QToolButton(parent)
         button.setObjectName(text)
