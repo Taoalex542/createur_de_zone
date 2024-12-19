@@ -5,14 +5,14 @@ from qgis.PyQt.QtCore import QSettings, QTranslator, Qt, QCoreApplication
 from qgis.PyQt.QtWidgets import QToolButton, QAction, QMenu
 from qgis.PyQt.QtGui import QIcon
 from qgis.core import QgsProject, QgsVectorLayer, edit, QgsFeature, QgsGeometry
-from .createur_de_zone_tool import createur_de_zone_tool
-from .createur_de_zone_poly import createur_de_zone_poly
+from .CETACE_tool import CETACE_tool
+from .CETACE_poly import CETACE_poly
 import os
 # Initialize Qt resources from file resources.py
 
 import os.path
 
-class createur_de_zone(object):
+class CETACE(object):
     """QGIS Plugin Implementation."""
     
     def __init__(self, iface):
@@ -31,16 +31,16 @@ class createur_de_zone(object):
         locale = QSettings().value('locale/userLocale')[0:2]
         locale_path = os.path.join(
             self.plugin_dir,
-            'createur_de_zone_{}.qm'.format(locale))
+            'CETACE_{}.qm'.format(locale))
 
         if os.path.exists(locale_path):
             self.translator = QTranslator()
             self.translator.load(locale_path)
 
         self.actions = []
-        self.menu = self.tr(u'Créateur de zone')
-        self.toolbar = self.iface.addToolBar(u'Créateur de zone')
-        self.toolbar.setObjectName(u'Créateur de zone')
+        self.menu = self.tr(u"Créateur d'Espaces de Travail À Caractère Éphémère")
+        self.toolbar = self.iface.addToolBar(u'CETACE')
+        self.toolbar.setObjectName(u"Créateur d'Espaces de Travail À Caractère Éphémère")
         self.actionList = []
         self.nom_zone = self.get_name()
         self.couche_zone = None
@@ -146,7 +146,7 @@ class createur_de_zone(object):
             f.close()
             return temp[0].replace("\n", "")
         else:
-            return "zone_plugin_createur"
+            return "zone_plugin_CETACE"
     
     def creerBouton(self, parent, text):
         button = QToolButton(parent)
@@ -176,7 +176,7 @@ class createur_de_zone(object):
         self.actionCriarRectangle = self.creerAction(os.path.dirname(os.path.realpath(__file__)) + "\\rect.svg",
                                                       u"Créer zones récangulaires",
                                                       self.runRectangle)
-        self.toolRectangle = createur_de_zone_tool(self.iface.mapCanvas(), self.actionCriarRectangle, self, self.iface) 
+        self.toolRectangle = CETACE_tool(self.iface.mapCanvas(), self.actionCriarRectangle, self, self.iface) 
         self.selectionButton = self.creerBouton(self.toolbar, u'Créer des rectangles')
         self.selectionButton.addAction(self.actionCriarRectangle)
         self.selectionButton.setDefaultAction(self.actionCriarRectangle)
@@ -184,7 +184,7 @@ class createur_de_zone(object):
         self.actionPoly = self.creerAction(os.path.dirname(os.path.realpath(__file__)) + "\\poly.svg",
                                                       u"Créer zones polygonales",
                                                       self.runPoly)
-        self.toolPoly = createur_de_zone_poly(self.iface.mapCanvas(), self.actionPoly, self, self.iface) 
+        self.toolPoly = CETACE_poly(self.iface.mapCanvas(), self.actionPoly, self, self.iface) 
         self.polyBouton = self.creerBouton(self.toolbar, u'Créer des polygones')
         self.polyBouton.addAction(self.actionPoly)
         self.polyBouton.setDefaultAction(self.actionPoly)

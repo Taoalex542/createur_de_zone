@@ -1,8 +1,8 @@
-from qgis.core import QgsPointXY, QgsRectangle, QgsWkbTypes, edit, QgsFeature, QgsGeometry
+from qgis.core import QgsPointXY, QgsWkbTypes, edit, QgsFeature, QgsGeometry
 from qgis.gui import QgsMapTool, QgsRubberBand
 from qgis.PyQt.QtGui import QColor
 
-class createur_de_zone_tool(QgsMapTool):
+class CETACE_poly(QgsMapTool):
 
     def __init__(self, canvas, action, main, iface):
         self.canvas = canvas
@@ -18,10 +18,11 @@ class createur_de_zone_tool(QgsMapTool):
         mFillColor = QColor( 254, 178, 76, 63 );
         self.rubberBand.setColor(mFillColor)
         self.rubberBand.setWidth(1)
+        self.points = []
         self.reset()
     
     def reset(self):
-        self.startPoint = self.endPoint = None
+        self.points = []
         self.isEmittingPoint = False
         self.rubberBand.reset(QgsWkbTypes.PolygonGeometry)
     
@@ -46,56 +47,54 @@ class createur_de_zone_tool(QgsMapTool):
             self.y = False
     
     def canvasPressEvent(self, e):
-        self.startPoint = self.toMapCoordinates(e.pos())
-        self.endPoint = self.startPoint
+        self.points.append(self.toMapCoordinates(e.pos()))
         self.isEmittingPoint = True
-        self.showRect(self.startPoint, self.endPoint)
+        self.showPoly()
     
     def canvasReleaseEvent(self, e):
         self.isEmittingPoint = False
-        r = self.rectangle()
-        if r == None:
+        p = self.polygon()
+        if p == None:
             return
         self.main.get_layer()
         if self.main.couche_zone == None:
             self.main.create_zone_layer()
         with edit(self.main.couche_zone):
             ctrl = QgsFeature()
-            ctrl.setGeometry(QgsGeometry.fromRect(r))
+            ctrl.setGeometry(QgsGeometry.fromPolygonXY(p))
             self.main.couche_zone.dataProvider().addFeature(ctrl)
             self.main.couche_zone.updateExtents()
             self.main.geoms.insert(0, ctrl)
         self.rubberBand.hide()
+        self.points = []
         self.main.temp = []
     
     def canvasMoveEvent(self, e):
         if not self.isEmittingPoint:
             return
-        self.endPoint = self.toMapCoordinates( e.pos() )
-        self.showRect(self.startPoint, self.endPoint)
+        self.points.append(self.toMapCoordinates( e.pos() ))
+        self.showPoly()
     
-    def showRect(self, startPoint, endPoint):
+    def showPoly(self):
         self.rubberBand.reset(QgsWkbTypes.PolygonGeometry)
-        if startPoint.x() == endPoint.x() or startPoint.y() == endPoint.y():
-            return
-        point1 = QgsPointXY(startPoint.x(), startPoint.y())
-        point2 = QgsPointXY(startPoint.x(), endPoint.y())
-        point3 = QgsPointXY(endPoint.x(), endPoint.y())
-        point4 = QgsPointXY(endPoint.x(), startPoint.y())
+        lenp = len(self.points)
+        i = 0
+        for point in self.points:
+            i += 1
+            if i == lenp:
+                self.rubberBand.addPoint(QgsPointXY(point[0], point[1]), True)
+            else:
+                self.rubberBand.addPoint(QgsPointXY(point[0], point[1]), False)
     
-        self.rubberBand.addPoint(point1, False)
-        self.rubberBand.addPoint(point2, False)
-        self.rubberBand.addPoint(point3, False)
-        self.rubberBand.addPoint(point4, True)    # true to update canvas
         self.rubberBand.show()
     
-    def rectangle(self):
-        if self.startPoint is None or self.endPoint is None:
+    def polygon(self):
+        if (len(self.points) <= 2):
             return None
-        elif self.startPoint.x() == self.endPoint.x() or self.startPoint.y() == self.endPoint.y():
-            return None
-    
-        return QgsRectangle(self.startPoint, self.endPoint)
+        array = []
+        for point in self.points:
+            array.append(QgsPointXY(point[0], point[1]))
+        return [array]
     
     def deactivate(self):
         self.rubberBand.reset()

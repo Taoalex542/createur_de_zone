@@ -29,5 +29,5 @@ def classFactory(iface):  # pylint: disable=invalid-name
     :type iface: QgsInterface
     """
     #
-    from .createur_de_zone import createur_de_zone
-    return createur_de_zone(iface)
+    from .CETACE import CETACE
+    return CETACE(iface)
